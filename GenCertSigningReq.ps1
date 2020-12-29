@@ -1,43 +1,8 @@
 ﻿ <#
-.SYNOPSIS
-GenCertSigningReq.ps1 
-
 .DESCRIPTION 
-This powershell script can be used to generate a Certificate Signing Request (CSR) using the SHA256 signature algorithm and a 2048 bit key size (RSA). Subject Alternative Names are supported.
+This powershell script can be used to generate a University of Washington specific Certificate Signing Request (CSR) using the SHA256 signature algorithm and a 2048 bit key size (RSA).
+Subject Alternative Names are supported.
 
-
-.PARAMETER
-
-
-
-.EXAMPLE
-.\GenCertSigningReq.ps1 
-
-
-.NOTES
-Written by: Reinout Segers
-Edited By: Drago Petrovic
-
-
-
-Find me on:
-
-* LinkedIn:	https://www.linkedin.com/in/drago-petrovic-86075730/
-* Xing:     https://www.xing.com/profile/Drago_Petrovic
-* Website:  https://blog.abstergo.ch
-* GitHub:   https://github.com/MSB365
-
-
-Change Log
-v2.0
-- Modified for working with Windows 10, Windows Server 2012 R2 and Windows Server 2016
-v1.1
-- Added support for Windows Server 2008R2 and PowerShell 2.0
-v1.0
-- initial version
-
-
---- keep it simple, but significant ---
 
 .COPYRIGHT
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
@@ -76,12 +41,18 @@ $request['SAN'] = @{}
 
 Write-Host "keep it simple but significant" -ForegroundColor green
 Write-Host "Enter the Certificate informations below" -ForegroundColor cyan
-$request['CN'] = Read-Host "Common Name (e.g. company.com)"
-$request['O'] = Read-Host "Organisation (e.g. Company Ltd)"
-$request['OU'] = Read-Host "Organisational Unit (e.g. IT)"
-$request['L'] = Read-Host "City (e.g. Amsterdam)"
-$request['S'] = Read-Host "State (e.g. Noord-Holland)"
-$request['C'] = Read-Host "Country (e.g. NL)"
+
+$tempCN = [System.Net.Dns]::GetHostName().ToLower() + "." + [System.Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().DomainName;
+Write-Host "Default: $($tempCN)" -ForegroundColor magenta
+if (!($request['CN'] = Read-Host "Common Name (FQDN), press enter for default")) { $request['CN'] = $tempCN }
+
+$request['O']    = "University of Washington"
+$request['OU']   = "UW-IT"
+$request['L']    = "Seattle"
+$request['S']    = "Washington"
+$request['C']    = "US"
+
+
 
 ###########################
 # Subject Alternative Names
